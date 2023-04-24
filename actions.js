@@ -19,6 +19,10 @@ const viewAllEmployees = async () => {
   }
 };
 
+function viewAllManagers() {
+  return db.query(`SELECT * FROM employees WHERE manager_id IS NOT NULL`);
+};
+
 const viewAllRoles = async () => {
   const query = `
     SELECT roles.id, roles.title, departments.name AS department, roles.salary
@@ -109,6 +113,8 @@ const getEmployees = async () => {
   }
 };
 
+
+
 const addEmployee = async (employee) => {
   try {
     await db.query('INSERT INTO employees SET ?', employee);
@@ -197,6 +203,7 @@ module.exports = {
   viewAllDepartments,
   viewAllRoles,
   viewAllEmployees,
+  viewAllManagers,
   addDepartment,
   addRole,
   addEmployee,

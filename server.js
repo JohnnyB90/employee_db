@@ -1,8 +1,10 @@
+require("console.table");
 const { prompt } = require("inquirer");
 const {
   viewAllDepartments,
   viewAllRoles,
   viewAllEmployees,
+  viewAllManagers,
   addDepartment,
   addRole,
   addEmployee,
@@ -23,6 +25,7 @@ const start = async () => {
       { name: "View all departments", value: "VIEW_DEPARTMENTS" },
       { name: "View all roles", value: "VIEW_ROLES" },
       { name: "View all employees", value: "VIEW_EMPLOYEES" },
+      { name: "View all managers", value: "VIEW_MANAGERS"},
       { name: "Add a department", value: "ADD_DEPARTMENT" },
       { name: "Add a role", value: "ADD_ROLE" },
       { name: "Add an employee", value: "ADD_EMPLOYEE" },
@@ -39,6 +42,9 @@ const start = async () => {
       break;
     case "VIEW_EMPLOYEES":
       await viewAllEmployees();
+      break;
+    case "VIEW_MANAGERS":
+      await viewAllManagers();
       break;
     case "ADD_DEPARTMENT":
       await addDepartment();
