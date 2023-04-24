@@ -1,0 +1,19 @@
+{
+    "name": "employee-management-system",
+    "version": "1.0.0",
+    "description": "A command-line interface for managing employees, roles, and departments in a company",
+    "main": "index.js",
+    "scripts": {
+        "start": "node index.js",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "author": "Your Name",
+    "license": "MIT",
+    "dependencies": {
+        "inquirer": "^8.2.4",
+        "mysql": "^2.18.1",
+        "mysql2": "^2.3.3",
+        "nodemon": "^2.0.22",
+        "sql": "^0.78.0"
+    }
+}
