@@ -78,12 +78,14 @@ const getRoles = async () => {
   const query = 'SELECT * FROM roles';
   try {
     const [rows, fields] = await db.query(query);
+    console.log(rows);
     return rows;
   } catch (error) {
     console.error(error);
     return [];
   }
 };
+
 
 const getDepartments = async () => {
   const query = 'SELECT * FROM departments';
@@ -174,20 +176,21 @@ const addEmployeePrompt = async (roles, employees) => {
 };
 
 const updateEmployeeRole = async () => {
-  const [employees, roles] = await Promise.all([
-    db.query('SELECT * FROM employees'),
-    db.query('SELECT * FROM roles'),
-  ]);
-
-  const { employee_id, role_id } = await updateEmployeeRolePrompt(employees, roles);
-
   try {
+    const employees = await db.query('SELECT * FROM employees');
+    const roles = await db.query('SELECT * FROM roles');
+    console.log('Employees:', employees);
+    console.log('Roles:', roles);
+
+    const { employee_id, role_id } = await updateEmployeeRolePrompt(employees, roles);
+
     await db.query('UPDATE employees SET role_id = ? WHERE id = ?', [role_id, employee_id]);
     console.log(`Employee role updated successfully.`);
   } catch (error) {
     console.error(error);
   }
 };
+
 
 
 module.exports = {

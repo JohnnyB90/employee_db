@@ -128,7 +128,6 @@ const addEmployeePrompt = (roles, employees) => {
       default: 'None',
     },
   ]).then(answers => {
-    // Map the 'firstName' key to 'first_name'
     answers.first_name = answers.firstName;
     delete answers.firstName;
 
@@ -137,17 +136,18 @@ const addEmployeePrompt = (roles, employees) => {
 };
 
 
-// Update employee role prompt
 const updateEmployeeRolePrompt = (employees, roles) => {
   const employeeChoices = employees.map((employee) => ({
     name: `${employee.first_name} ${employee.last_name}`,
     value: employee.id,
   }));
+  console.log(employeeChoices);
 
   const roleChoices = roles.map((role) => ({
     name: role.title,
     value: role.id,
   }));
+  console.log(roleChoices); 
 
   return inquirer.prompt([
     {
