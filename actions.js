@@ -1,5 +1,6 @@
 const { prompt } = require('inquirer');
 const db = require('./connection.js');
+const { updateEmployeeRolePrompt } = require('./utils/prompt.js');
 
 const viewAllEmployees = async () => {
   const query = `
@@ -32,9 +33,6 @@ const viewAllRoles = async () => {
   }
 };
 
-
-
-
 const viewAllDepartments = async () => {
   const query = 'SELECT * FROM departments';
   try {
@@ -44,7 +42,6 @@ const viewAllDepartments = async () => {
     console.error(error);
   }
 };
-
 
 const addDepartment = async () => {
   const { name } = await prompt([
@@ -77,7 +74,6 @@ const addRole = async (role) => {
   }
 };
 
-
 const getRoles = async () => {
   const query = 'SELECT * FROM roles';
   try {
@@ -88,7 +84,6 @@ const getRoles = async () => {
     return [];
   }
 };
-
 
 const getDepartments = async () => {
   const query = 'SELECT * FROM departments';
@@ -101,7 +96,6 @@ const getDepartments = async () => {
   }
 };
 
-
 const getEmployees = async () => {
   const query = 'SELECT * FROM employees';
   try {
@@ -113,104 +107,99 @@ const getEmployees = async () => {
   }
 };
 
-const addEmployee = async () => {
+const addEmployee = async (employee) => {
   try {
-    const [roles, employees] = await Promise.all([
-      getRoles(),
-      db.query('SELECT * FROM employees'),
-    ]);
-  
-      const { firstName, lastName, roleId, managerId } = await prompt([
-        {
-          type: 'input',
-          name: 'firstName',
-          message: 'Enter the first name of the employee:',
-        },
-        {
-          type: 'input',
-          name: 'lastName',
-          message: 'Enter the last name of the employee:',
-        },
-        {
-          type: 'list',
-          name: 'roleId',
-          message: 'Select the role for the employee:',
-          choices: roles.map((role) => ({
-            name: role.title,
-            value: role.id,
-          })),
-        },
-        {
-          type: 'list',
-          name: 'managerId',
-          message: 'Select the manager for the employee (optional):',
-          choices: employees.map((employee) => ({
-            name: `${employee.first_name} ${employee.last_name}`,
-            value: employee.id,
-          })),
-        },
-      ]);
-  
-      const employee = {
-        first_name: firstName,
-        last_name: lastName,
-        role_id: roleId,
-        manager_id: managerId || null,
-      };
-  
-      await db.query('INSERT INTO employees SET ?', employee);
-      console.log(`Employee ${firstName} ${lastName} has been added.`);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-  
-  
-  
-  const updateEmployeeRole = async () => {
-    const [employees, roles] = await Promise.all([
-      db.query('SELECT * FROM employees'),
-      db.query('SELECT * FROM roles'),
-    ]);
-  
-    const { employee, role } = await prompt([
-      {
-        type: 'list',
-        name: 'employee',
-        message: 'Select the employee to update:',
-        choices: employees.map(({ id, first_name, last_name }) => ({
-          name: `${first_name} ${last_name}`,
-          value: id,
-        })),
+    await db.query('INSERT INTO employees SET ?', employee);
+    console.log(`Employee ${employee.first_name} ${employee.last_name} has been added.`);
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+
+
+const addEmployeePrompt = async (roles, employees) => {
+  const { firstName, lastName, roleId, managerId } = await prompt([
+    {
+      type: 'input',
+      name: 'firstName',
+      message: 'Enter the first name of the employee:',
+      validate: (input) => {
+        if (!input) {
+          return 'Please enter a first name.';
+        }
+        return true;
       },
-      {
-        type: 'list',
-        name: 'role',
-        message: 'Select the new role for the employee:',
-        choices: roles.map(({ id, title }) => ({ name: title, value: id })),
+    },
+    {
+      type: 'input',
+      name: 'lastName',
+      message: 'Enter the last name of the employee:',
+      validate: (input) => {
+        if (!input) {
+          return 'Please enter a last name.';
+        }
+        return true;
       },
-    ]);
-  
-    try {
-      await db.query('UPDATE employees SET role_id = ? WHERE id = ?', [role, employee]);
-      console.log(`Employee role updated successfully.`);
-    } catch (error) {
-      console.error(error);
-    }
+    },
+    {
+      type: 'list',
+      name: 'roleId',
+      message: 'Select the role for the employee:',
+      choices: roles.map((role) => ({
+        name: role.title,
+        value: role.id,
+      })),
+    },
+    {
+      type: 'list',
+      name: 'managerId',
+      message: 'Select the manager for the employee (optional):',
+      choices: employees.map((employee) => ({
+        name: `${employee.first_name} ${employee.last_name}`,
+        value: employee.id,
+      })),
+    },
+  ]);
+
+  const employee = {
+    first_name: firstName,
+    last_name: lastName,
+    role_id: roleId,
+    manager_id: managerId || null,
   };
   
-  
-  module.exports = {
-    viewAllDepartments,
-    viewAllRoles,
-    viewAllEmployees,
-    addDepartment,
-    addRole,
-    addEmployee,
-    updateEmployeeRole,
-    getDepartments,
-    getRoles,
-    getEmployees,
-  };
-  
-  
+
+  await addEmployee(employee);
+};
+
+const updateEmployeeRole = async () => {
+  const [employees, roles] = await Promise.all([
+    db.query('SELECT * FROM employees'),
+    db.query('SELECT * FROM roles'),
+  ]);
+
+  const { employee_id, role_id } = await updateEmployeeRolePrompt(employees, roles);
+
+  try {
+    await db.query('UPDATE employees SET role_id = ? WHERE id = ?', [role_id, employee_id]);
+    console.log(`Employee role updated successfully.`);
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+
+module.exports = {
+  viewAllDepartments,
+  viewAllRoles,
+  viewAllEmployees,
+  addDepartment,
+  addRole,
+  addEmployee,
+  addEmployeePrompt,
+  updateEmployeeRole,
+  getDepartments,
+  getRoles,
+  getEmployees,
+};

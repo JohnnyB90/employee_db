@@ -11,10 +11,7 @@ const {
   getRoles,
   getEmployees,
 } = require("./actions");
-const {
-  addRolePrompt,
-  addEmployeePrompt,
-} = require("./utils/prompt");
+const { addRolePrompt, addEmployeePrompt } = require("./utils/prompt");
 
 const start = async () => {
   console.log("Welcome to Employee Management System!");
@@ -70,4 +67,3 @@ const start = async () => {
   start();
 };
 start();
-

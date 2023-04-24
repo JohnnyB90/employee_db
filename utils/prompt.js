@@ -1,5 +1,4 @@
 const inquirer = require('inquirer');
-// const { viewAllDepartments, viewAllRoles, viewAllEmployees, addDepartment, addRole, addEmployee, updateEmployeeRole } = require('./actions');
 
 // Main menu prompt
 const mainPrompt = () => {
@@ -106,7 +105,7 @@ const addEmployeePrompt = (roles, employees) => {
     },
     {
       type: 'input',
-      name: 'lastName',
+      name: 'last_name',
       message: 'Enter the last name of the employee:',
       validate: (input) => {
         if (!input) {
@@ -128,7 +127,13 @@ const addEmployeePrompt = (roles, employees) => {
       choices: managerChoices,
       default: 'None',
     },
-  ]);
+  ]).then(answers => {
+    // Map the 'firstName' key to 'first_name'
+    answers.first_name = answers.firstName;
+    delete answers.firstName;
+
+    return answers;
+  });
 };
 
 
@@ -147,18 +152,19 @@ const updateEmployeeRolePrompt = (employees, roles) => {
   return inquirer.prompt([
     {
       type: 'list',
-      name: 'employee_id',
+      name: 'employee',
       message: 'Select the employee to update:',
       choices: employeeChoices,
     },
     {
       type: 'list',
-      name: 'role_id',
+      name: 'role',
       message: 'Select the new role for the employee:',
       choices: roleChoices,
     },
   ]);
 };
+
 
 module.exports = {
   mainPrompt,
