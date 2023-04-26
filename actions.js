@@ -2,6 +2,7 @@ const { prompt } = require('inquirer');
 const db = require('./connection.js');
 const { updateEmployeeRolePrompt } = require('./utils/prompt.js');
 
+// This allows to view all employees by selecting them from the sql database once schema and seeds are sourced, schema must be sourced, seeds does not have to if your adding your own.
 const viewAllEmployees = async () => {
   const query = `
   SELECT employees.id, employees.first_name, employees.last_name, roles.title, departments.name AS department, roles.salary, CONCAT(manager.first_name, ' ', manager.last_name) AS manager
@@ -12,17 +13,30 @@ const viewAllEmployees = async () => {
   `;
 
   try {
-    const [rows, fields] = await db.query(query);
+    const [rows] = await db.query(query);
+    console.table(rows);
+  } catch (error) {
+    console.error(error);
+  }
+};
+// This allows to view all managers by selecting them from the sql database by identifying them if they have a Manager string under title once schema and seeds are sourced, schema must be sourced, seeds does not have to if your adding your own.
+const viewAllManagers = async () => {
+  const query = `
+    SELECT employees.id, employees.first_name, employees.last_name
+    FROM employees
+    JOIN roles ON employees.role_id = roles.id
+    WHERE title = "Manager"
+  `;
+
+  try {
+    const [rows] = await db.query(query);
     console.table(rows);
   } catch (error) {
     console.error(error);
   }
 };
 
-function viewAllManagers() {
-  return db.query(`SELECT * FROM employees WHERE manager_id IS NOT NULL`);
-};
-
+// This allows to view all roles by selecting them from the sql database once schema and seeds are sourced, schema must be sourced, seeds does not have to if your adding your own.
 const viewAllRoles = async () => {
   const query = `
     SELECT roles.id, roles.title, departments.name AS department, roles.salary
@@ -30,23 +44,24 @@ const viewAllRoles = async () => {
     LEFT JOIN departments ON roles.department_id = departments.id;
   `;
   try {
-    const [rows, fields] = await db.query(query);
+    const [rows] = await db.query(query);
     console.table(rows);
   } catch (error) {
     console.error(error);
   }
 };
-
+// This allow to view all departments by selecting them from the sql database once schema and seeds are sourced, schema must be sourced, seeds does not have to if your adding your own.
 const viewAllDepartments = async () => {
   const query = 'SELECT * FROM departments';
   try {
-    const [rows, fields] = await db.query(query);
+    const [rows] = await db.query(query);
     console.table(rows);
   } catch (error) {
     console.error(error);
   }
 };
 
+// This will add a department by essentially deconstructing the anwsers from the prompt addDepartment and then doing a try to insert into database set name for department. The question mark acts as a placeholder to prevent sql injection.
 const addDepartment = async () => {
   const { name } = await prompt([
     {
@@ -68,7 +83,7 @@ const addDepartment = async () => {
     console.error(error);
   }
 };
-
+// This will add a role by essentially deconstructing the anwsers from the prompt role and then doing a try to insert into database set name for department. The question mark acts as a placeholder to prevent sql injection. 
 const addRole = async (role) => {
   try {
     const [result] = await db.query('INSERT INTO roles SET ?', role);
@@ -78,11 +93,11 @@ const addRole = async (role) => {
   }
 };
 
+// This is a simple grab data from the roles table, return the roles
 const getRoles = async () => {
   const query = 'SELECT * FROM roles';
   try {
-    const [rows, fields] = await db.query(query);
-    console.log(rows);
+    const [rows] = await db.query(query);
     return rows;
   } catch (error) {
     console.error(error);
@@ -90,22 +105,22 @@ const getRoles = async () => {
   }
 };
 
-
+// This is a simple grab data from the departments table, return the roles
 const getDepartments = async () => {
   const query = 'SELECT * FROM departments';
   try {
-    const [rows, fields] = await db.query(query);
+    const [rows] = await db.query(query);
     return rows;
   } catch (error) {
     console.error(error);
     return [];
   }
 };
-
+// This is a simple grab data from the employees table, return the employees
 const getEmployees = async () => {
   const query = 'SELECT * FROM employees';
   try {
-    const [rows, fields] = await db.query(query);
+    const [rows] = await db.query(query);
     return rows;
   } catch (error) {
     console.error(error);
@@ -114,7 +129,7 @@ const getEmployees = async () => {
 };
 
 
-
+// This is the action to add the employee, It 
 const addEmployee = async (employee) => {
   try {
     await db.query('INSERT INTO employees SET ?', employee);
@@ -124,81 +139,6 @@ const addEmployee = async (employee) => {
   }
 };
 
-
-
-const addEmployeePrompt = async (roles, employees) => {
-  const { firstName, lastName, roleId, managerId } = await prompt([
-    {
-      type: 'input',
-      name: 'firstName',
-      message: 'Enter the first name of the employee:',
-      validate: (input) => {
-        if (!input) {
-          return 'Please enter a first name.';
-        }
-        return true;
-      },
-    },
-    {
-      type: 'input',
-      name: 'lastName',
-      message: 'Enter the last name of the employee:',
-      validate: (input) => {
-        if (!input) {
-          return 'Please enter a last name.';
-        }
-        return true;
-      },
-    },
-    {
-      type: 'list',
-      name: 'roleId',
-      message: 'Select the role for the employee:',
-      choices: roles.map((role) => ({
-        name: role.title,
-        value: role.id,
-      })),
-    },
-    {
-      type: 'list',
-      name: 'managerId',
-      message: 'Select the manager for the employee (optional):',
-      choices: employees.map((employee) => ({
-        name: `${employee.first_name} ${employee.last_name}`,
-        value: employee.id,
-      })),
-    },
-  ]);
-
-  const employee = {
-    first_name: firstName,
-    last_name: lastName,
-    role_id: roleId,
-    manager_id: managerId || null,
-  };
-  
-
-  await addEmployee(employee);
-};
-
-const updateEmployeeRole = async () => {
-  try {
-    const employees = await db.query('SELECT * FROM employees');
-    const roles = await db.query('SELECT * FROM roles');
-    console.log('Employees:', employees);
-    console.log('Roles:', roles);
-
-    const { employee_id, role_id } = await updateEmployeeRolePrompt(employees, roles);
-
-    await db.query('UPDATE employees SET role_id = ? WHERE id = ?', [role_id, employee_id]);
-    console.log(`Employee role updated successfully.`);
-  } catch (error) {
-    console.error(error);
-  }
-};
-
-
-
 module.exports = {
   viewAllDepartments,
   viewAllRoles,
@@ -207,8 +147,8 @@ module.exports = {
   addDepartment,
   addRole,
   addEmployee,
-  addEmployeePrompt,
-  updateEmployeeRole,
+  // addEmployeePrompt,
+  // updateEmployeeRole,
   getDepartments,
   getRoles,
   getEmployees,

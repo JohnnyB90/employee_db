@@ -1,6 +1,7 @@
+// This is importing the inquirer tool
 const inquirer = require('inquirer');
 
-// Main menu prompt
+// Main menu prompt list of options that can be selected 
 const mainPrompt = () => {
   return inquirer.prompt([
     {
@@ -21,7 +22,7 @@ const mainPrompt = () => {
   ]);
 };
 
-// Add department prompt
+// Add department prompt will begin questions about the adding department
 const addDepartmentPrompt = () => {
   return inquirer.prompt([
     {
@@ -38,7 +39,7 @@ const addDepartmentPrompt = () => {
   ]);
 };
 
-// Add role prompt
+// Add role prompt will begin questions about adding roles
 const addRolePrompt = (departments) => {
   const departmentChoices = departments.map((department) => ({
     name: department.name,
@@ -77,7 +78,7 @@ const addRolePrompt = (departments) => {
   ]);
 };
 
-// Add employee prompt
+// Add employee prompt will begin questions about add employee
 const addEmployeePrompt = (roles, employees) => {
   const roleChoices = roles.map((role) => ({
     name: role.title,
@@ -135,20 +136,20 @@ const addEmployeePrompt = (roles, employees) => {
   });
 };
 
-
+// updateEmployeeRolePrompt will begin questions about updateEmployeeRoles
 const updateEmployeeRolePrompt = (employees, roles) => {
+  // This will create a new array with a for loop using the map method of the current list of employees that exists and store it into a variable called employeeChoices
   const employeeChoices = employees.map((employee) => ({
     name: `${employee.first_name} ${employee.last_name}`,
     value: employee.id,
   }));
-  console.log(employeeChoices);
-
+// This will create a new array with a for loop using the map method of the current list of roles that exists and store it into a variable called roleChoices
   const roleChoices = roles.map((role) => ({
     name: role.title,
     value: role.id,
   }));
-  console.log(roleChoices); 
 
+// This will then create questions about the employee and role you wish to update
   return inquirer.prompt([
     {
       type: 'list',
@@ -165,7 +166,7 @@ const updateEmployeeRolePrompt = (employees, roles) => {
   ]);
 };
 
-
+// This is exporting all of the functions to be used in another file
 module.exports = {
   mainPrompt,
   addDepartmentPrompt,
