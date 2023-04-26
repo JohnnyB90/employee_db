@@ -1,5 +1,8 @@
+// This is allowing the tables within sql to be displayed as a table to the terminal when returned.
 require("console.table");
+// Importing the inquirer tool
 const { prompt } = require("inquirer");
+// This is importing the exported functions from the actions.js file.
 const {
   viewAllDepartments,
   viewAllRoles,
@@ -13,8 +16,10 @@ const {
   getRoles,
   getEmployees,
 } = require("./actions");
+// Importing the "adds" from the prompt.js file.
 const { addRolePrompt, addEmployeePrompt } = require("./utils/prompt");
 
+// This is running the prompt for the questions in order to initiate the appropriate function.
 const start = async () => {
   console.log("Welcome to Employee Management System!");
   const { action } = await prompt({
@@ -33,6 +38,8 @@ const start = async () => {
       { name: "Exit", value: "EXIT" },
     ],
   });
+
+  // Switch is checking the value of the action variable and running a function based on the value matching the choice.
   switch (action) {
     case "VIEW_DEPARTMENTS":
       await viewAllDepartments();
@@ -70,6 +77,7 @@ const start = async () => {
       console.error("Invalid action:", action);
       break;
   }
+  // Start is being called recursively here, meaning it will go back to the menu after the choice is made and questions completed.
   start();
 };
 start();

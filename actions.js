@@ -139,6 +139,21 @@ const addEmployee = async (employee) => {
   }
 };
 
+// This is take the choice from the updateEmployeeRolePrompt and using it to update the database here.
+const updateEmployeeRole = async () => {
+  try {
+    const [employees] = await db.query('SELECT * FROM employees');
+    const [roles] = await db.query('SELECT * FROM roles');
+
+    const { employee, role } = await updateEmployeeRolePrompt(employees, roles);
+    await db.query('UPDATE employees SET role_id = ? WHERE id = ?', [role, employee]);
+    console.log(`Employee role updated successfully.`);
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+// This is exporting the functions of the actions.js file to be used within the server.js file.
 module.exports = {
   viewAllDepartments,
   viewAllRoles,
@@ -147,8 +162,7 @@ module.exports = {
   addDepartment,
   addRole,
   addEmployee,
-  // addEmployeePrompt,
-  // updateEmployeeRole,
+  updateEmployeeRole,
   getDepartments,
   getRoles,
   getEmployees,

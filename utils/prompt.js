@@ -1,27 +1,6 @@
 // This is importing the inquirer tool
 const inquirer = require('inquirer');
 
-// Main menu prompt list of options that can be selected 
-const mainPrompt = () => {
-  return inquirer.prompt([
-    {
-      type: 'list',
-      name: 'action',
-      message: 'What would you like to do?',
-      choices: [
-        'View all departments',
-        'View all roles',
-        'View all employees',
-        'Add a department',
-        'Add a role',
-        'Add an employee',
-        'Update an employee role',
-        'Exit',
-      ],
-    },
-  ]);
-};
-
 // Add department prompt will begin questions about the adding department
 const addDepartmentPrompt = () => {
   return inquirer.prompt([
@@ -168,7 +147,6 @@ const updateEmployeeRolePrompt = (employees, roles) => {
 
 // This is exporting all of the functions to be used in another file
 module.exports = {
-  mainPrompt,
   addDepartmentPrompt,
   addRolePrompt,
   addEmployeePrompt,

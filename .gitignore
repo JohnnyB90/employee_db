@@ -1,2 +1,3 @@
+# This is preventing the node_modules from bogging down the repository, etc. It is also preventing the information contained in .env from being leaked as a security measure.
 node_modules
 .env
