@@ -18,6 +18,25 @@ const addDepartmentPrompt = () => {
   ]);
 };
 
+// This will begin questions about viewing employees by manager
+const viewEmployeesByManagerPrompt = async (managers) => {
+  const choices = managers.map(({ id, first_name, last_name }) => ({
+    name: `${first_name} ${last_name}`,
+    value: id,
+  }));
+
+  const { managerId } = await inquirer.prompt([
+    {
+      type: "list",
+      name: "managerId",
+      message: "Select a manager:",
+      choices,
+    },
+  ]);
+
+  return { managerId };
+};
+
 // Add role prompt will begin questions about adding roles
 const addRolePrompt = (departments) => {
   const departmentChoices = departments.map((department) => ({
@@ -127,8 +146,7 @@ const updateEmployeeRolePrompt = (employees, roles) => {
     name: role.title,
     value: role.id,
   }));
-
-// This will then create questions about the employee and role you wish to update
+  // This will then create questions about the employee and role you wish to update
   return inquirer.prompt([
     {
       type: 'list',
@@ -145,10 +163,117 @@ const updateEmployeeRolePrompt = (employees, roles) => {
   ]);
 };
 
+// This will allow updating the employee's manager by taking in a list of employee's and managers in the system and creating a new array using the map method. Once that is done it will be displayed to the user to select which employee they would like to update and then those anwsers will be carried over to the actions.js file to be used.
+const updateEmployeeManagerPrompt = async (employees) => {
+  const employeeChoices = employees.map((e) => ({
+    name: `${e.first_name} ${e.last_name}`,
+    value: e.id,
+  }));
+
+  const managerChoices = [
+    { name: "None", value: null },
+    ...employeeChoices,
+  ];
+
+  const questions = [
+    {
+      type: "list",
+      name: "employee",
+      message: 'Select an employee to update their manager:',
+      choices: employeeChoices,
+    },
+    {
+      type: "list",
+      name: "manager",
+      message: 'Select a new manager for the employee:',
+      choices: managerChoices,
+    },
+  ];
+
+  return inquirer.prompt(questions);
+};
+
+// This will allow the user to delete a department, role, or employee depending on what is selected from the prompt list, and that will be assigned to the type variable and forced into all lowercase for easier and simple use in the actions.js file.
+const deleteRecordPrompt = async (departments, roles, employees) => {
+  let departmentChoices = [];
+  let roleChoices = [];
+  let employeeChoices = [];
+  
+  if (departments) {
+    departmentChoices = departments.map((department) => ({
+      name: department.name,
+      value: department.id,
+    }));
+  }
+
+  if (roles) {
+    roleChoices = roles.map((role) => ({
+      name: role.title,
+      value: role.id,
+    }));
+  }
+
+  if (employees) {
+    employeeChoices = employees.map((employee) => ({
+      name: `${employee.first_name} ${employee.last_name}`,
+      value: employee.id,
+    }));
+  }
+  
+  const { recordType } = await inquirer.prompt([
+    {
+      type: 'list',
+      name: 'recordType',
+      message: 'What would you like to delete?',
+      choices: [
+        { name: 'Department', value: 'DELETE_DEPARTMENT' },
+        { name: 'Role', value: 'DELETE_ROLE' },
+        { name: 'Employee', value: 'DELETE_EMPLOYEE' },
+      ],
+    },
+  ]);
+
+  let recordId;
+  if (recordType === 'DELETE_DEPARTMENT') {
+    ({ recordId } = await inquirer.prompt([
+      {
+        type: 'list',
+        name: 'recordId',
+        message: 'Select the department to delete:',
+        choices: departmentChoices,
+      },
+    ]));
+  } else if (recordType === 'DELETE_ROLE') {
+    ({ recordId } = await inquirer.prompt([
+      {
+        type: 'list',
+        name: 'recordId',
+        message: 'Select the role to delete:',
+        choices: roleChoices,
+      },
+    ]));
+  } else if (recordType === 'DELETE_EMPLOYEE') {
+    ({ recordId } = await inquirer.prompt([
+      {
+        type: 'list',
+        name: 'recordId',
+        message: 'Select the employee to delete:',
+        choices: employeeChoices,
+      },
+    ]));
+  }
+
+  return { recordType, recordId };
+};
+
+
 // This is exporting all of the functions to be used in another file
 module.exports = {
   addDepartmentPrompt,
   addRolePrompt,
   addEmployeePrompt,
   updateEmployeeRolePrompt,
+  updateEmployeeManagerPrompt,
+  viewEmployeesByManagerPrompt,
+  deleteRecordPrompt
 };

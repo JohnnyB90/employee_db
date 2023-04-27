@@ -7,6 +7,7 @@ const {
   viewAllDepartments,
   viewAllRoles,
   viewAllEmployees,
+  viewEmployeesByManager,
   viewAllManagers,
   addDepartment,
   addRole,
@@ -15,9 +16,16 @@ const {
   getDepartments,
   getRoles,
   getEmployees,
+  updateEmployeeManager,
+  viewEmployeesByDepartment,
+  deleteRecord,
 } = require("./actions");
 // Importing the "adds" from the prompt.js file.
-const { addRolePrompt, addEmployeePrompt } = require("./utils/prompt");
+const {
+  addRolePrompt,
+  addEmployeePrompt,
+  deleteRecordPrompt,
+} = require("./utils/prompt");
 
 // This is running the prompt for the questions in order to initiate the appropriate function.
 const start = async () => {
@@ -30,11 +38,18 @@ const start = async () => {
       { name: "View all departments", value: "VIEW_DEPARTMENTS" },
       { name: "View all roles", value: "VIEW_ROLES" },
       { name: "View all employees", value: "VIEW_EMPLOYEES" },
-      { name: "View all managers", value: "VIEW_MANAGERS"},
+      { name: "View all managers", value: "VIEW_MANAGERS" },
+      { name: "View employees by manager", value: "VIEW_EMPLOYEES_BY_MANAGER" },
+      {
+        name: "View employees by department",
+        value: "VIEW_EMPLOYEES_BY_DEPARTMENT",
+      },
       { name: "Add a department", value: "ADD_DEPARTMENT" },
       { name: "Add a role", value: "ADD_ROLE" },
       { name: "Add an employee", value: "ADD_EMPLOYEE" },
       { name: "Update an employee role", value: "UPDATE_EMPLOYEE_ROLE" },
+      { name: "Update an employee manager", value: "UPDATE_EMPLOYEE_MANAGER" },
+      { name: "Delete a record", value: "DELETE" },
       { name: "Exit", value: "EXIT" },
     ],
   });
@@ -53,6 +68,12 @@ const start = async () => {
     case "VIEW_MANAGERS":
       await viewAllManagers();
       break;
+    case "VIEW_EMPLOYEES_BY_MANAGER":
+      await viewEmployeesByManager();
+      break;
+    case "VIEW_EMPLOYEES_BY_DEPARTMENT":
+      await viewEmployeesByDepartment();
+      break;
     case "ADD_DEPARTMENT":
       await addDepartment();
       break;
@@ -69,6 +90,26 @@ const start = async () => {
       break;
     case "UPDATE_EMPLOYEE_ROLE":
       await updateEmployeeRole();
+      break;
+    case "UPDATE_EMPLOYEE_MANAGER":
+      await updateEmployeeManager();
+      break;
+    case "DELETE":
+      const { recordType } = await deleteRecordPrompt();
+      switch (recordType) {
+        case "DELETE_DEPARTMENT":
+          await deleteRecord("department");
+          break;
+        case "DELETE_ROLE":
+          await deleteRecord("role");
+          break;
+        case "DELETE_EMPLOYEE":
+          await deleteRecord("employee");
+          break;
+        default:
+          console.error("Invalid record type:", recordType);
+          break;
+      }
       break;
     case "EXIT":
       console.log("Goodbye!");
