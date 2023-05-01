@@ -23,7 +23,11 @@ Employee Tracker
 
 ## Photo
 
-## Link to respository
+![image](https://user-images.githubusercontent.com/117334322/235395374-61e5395d-4a44-406c-abd8-1e8300679c9b.png)
+
+## Link to recorded video
+
+https://drive.google.com/file/d/1vjeb_JHITmze4jSj7csCzPsn4R5l3SVq/view
 
 ## Description
 
