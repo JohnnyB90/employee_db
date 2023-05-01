@@ -93,6 +93,12 @@ const start = async () => {
     case "UPDATE_EMPLOYEE_MANAGER":
       await updateEmployeeManager();
       break;
+    case "EXIT":
+      process.exit(0);
+      break;
+    default:
+      console.log("Invalid action. Please choose again.");
+      break;
   }
   // Start is being called recursively here, meaning it will go back to the menu after the choice is made and questions completed.
   start();

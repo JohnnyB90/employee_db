@@ -25,7 +25,7 @@ const viewAllManagers = async () => {
     SELECT employees.id, employees.first_name, employees.last_name
     FROM employees
     JOIN roles ON employees.role_id = roles.id
-    WHERE title = "Manager"
+    WHERE title LIKE "%Manager%"
   `;
 
   try {
@@ -68,7 +68,7 @@ const viewEmployeesByManager = async () => {
       SELECT employees.id, employees.first_name, employees.last_name
       FROM employees
       JOIN roles ON employees.role_id = roles.id
-      WHERE title = "Manager"
+      WHERE title LIKE "%Manager%"
     `);
 
     const { managerId } = await viewEmployeesByManagerPrompt(managers);
