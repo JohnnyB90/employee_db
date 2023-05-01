@@ -231,60 +231,8 @@ const updateEmployeeManager = async () => {
   }
 };
 
-// This allows for deleting records in the database.
-const deleteRecord = async (type) => {
-  try {
-    let result;
-    let data;
-    switch (type) {
-      case 'department':
-        const departments = await getDepartments();
-        data = await deleteRecordPrompt(departments);
-        console.log(data);
-        if (data.recordId === null) return;
-        const department = departments.find((dept) => dept.id === data.recordId);
-        if (!department) {
-          console.log(`Department with ID ${data.recordId} does not exist.`);
-          return;
-        }
-        result = await db.query('DELETE FROM departments WHERE id = ?', [data.recordId]);
-        console.log(`Successfully deleted department: ${department.name}.`);
-        break;
 
-      case 'role':
-        const roles = await getRoles();
-        data = await deleteRecordPrompt(roles);
-        if (data.recordId === null) return;
-        const role = roles.find((r) => r.id === data.recordId);
-        if (!role) {
-          console.log(`Role with ID ${data.recordId} does not exist.`);
-          return;
-        }
-        result = await db.query('DELETE FROM roles WHERE id = ?', [data.recordId]);
-        console.log(`Successfully deleted role: ${role.title}.`);
-        break;
 
-      case 'employee':
-        const employees = await getEmployees();
-        data = await deleteRecordPrompt(employees);
-        if (data.recordId === null) return;
-        const employee = employees.find((emp) => emp.id === data.recordId);
-        if (!employee) {
-          console.log(`Employee with ID ${data.recordId} does not exist.`);
-          return;
-        }
-        result = await db.query('DELETE FROM employees WHERE id = ?', [data.recordId]);
-        console.log(`Successfully deleted employee: ${employee.first_name} ${employee.last_name}.`);
-        break;
-
-      default:
-        console.log(`Invalid type: ${type}. Please choose 'department', 'role', or 'employee'.`);
-        return;
-    }
-  } catch (error) {
-    console.error(error);
-  }
-};
 
 
 // This is exporting the functions of the actions.js file to be used within the server.js file.
@@ -302,6 +250,5 @@ module.exports = {
   getRoles,
   getEmployees,
   updateEmployeeManager,
-  viewEmployeesByDepartment,
-  deleteRecord
+  viewEmployeesByDepartment
 };

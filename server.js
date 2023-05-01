@@ -49,7 +49,6 @@ const start = async () => {
       { name: "Add an employee", value: "ADD_EMPLOYEE" },
       { name: "Update an employee role", value: "UPDATE_EMPLOYEE_ROLE" },
       { name: "Update an employee manager", value: "UPDATE_EMPLOYEE_MANAGER" },
-      { name: "Delete a record", value: "DELETE" },
       { name: "Exit", value: "EXIT" },
     ],
   });
@@ -93,29 +92,6 @@ const start = async () => {
       break;
     case "UPDATE_EMPLOYEE_MANAGER":
       await updateEmployeeManager();
-      break;
-    case "DELETE":
-      const { recordType } = await deleteRecordPrompt();
-      switch (recordType) {
-        case "DELETE_DEPARTMENT":
-          await deleteRecord("department");
-          break;
-        case "DELETE_ROLE":
-          await deleteRecord("role");
-          break;
-        case "DELETE_EMPLOYEE":
-          await deleteRecord("employee");
-          break;
-        default:
-          console.error("Invalid record type:", recordType);
-          break;
-      }
-      break;
-    case "EXIT":
-      console.log("Goodbye!");
-      process.exit();
-    default:
-      console.error("Invalid action:", action);
       break;
   }
   // Start is being called recursively here, meaning it will go back to the menu after the choice is made and questions completed.

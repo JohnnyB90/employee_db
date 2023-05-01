@@ -192,81 +192,6 @@ const updateEmployeeManagerPrompt = async (employees) => {
 
   return inquirer.prompt(questions);
 };
-
-// This will allow the user to delete a department, role, or employee depending on what is selected from the prompt list, and that will be assigned to the type variable and forced into all lowercase for easier and simple use in the actions.js file.
-const deleteRecordPrompt = async (departments, roles, employees) => {
-  let departmentChoices = [];
-  let roleChoices = [];
-  let employeeChoices = [];
-  
-  if (departments) {
-    departmentChoices = departments.map((department) => ({
-      name: department.name,
-      value: department.id,
-    }));
-  }
-
-  if (roles) {
-    roleChoices = roles.map((role) => ({
-      name: role.title,
-      value: role.id,
-    }));
-  }
-
-  if (employees) {
-    employeeChoices = employees.map((employee) => ({
-      name: `${employee.first_name} ${employee.last_name}`,
-      value: employee.id,
-    }));
-  }
-  
-  const { recordType } = await inquirer.prompt([
-    {
-      type: 'list',
-      name: 'recordType',
-      message: 'What would you like to delete?',
-      choices: [
-        { name: 'Department', value: 'DELETE_DEPARTMENT' },
-        { name: 'Role', value: 'DELETE_ROLE' },
-        { name: 'Employee', value: 'DELETE_EMPLOYEE' },
-      ],
-    },
-  ]);
-
-  let recordId;
-  if (recordType === 'DELETE_DEPARTMENT') {
-    ({ recordId } = await inquirer.prompt([
-      {
-        type: 'list',
-        name: 'recordId',
-        message: 'Select the department to delete:',
-        choices: departmentChoices,
-      },
-    ]));
-  } else if (recordType === 'DELETE_ROLE') {
-    ({ recordId } = await inquirer.prompt([
-      {
-        type: 'list',
-        name: 'recordId',
-        message: 'Select the role to delete:',
-        choices: roleChoices,
-      },
-    ]));
-  } else if (recordType === 'DELETE_EMPLOYEE') {
-    ({ recordId } = await inquirer.prompt([
-      {
-        type: 'list',
-        name: 'recordId',
-        message: 'Select the employee to delete:',
-        choices: employeeChoices,
-      },
-    ]));
-  }
-
-  return { recordType, recordId };
-};
-
-
 // This is exporting all of the functions to be used in another file
 module.exports = {
   addDepartmentPrompt,
@@ -275,5 +200,4 @@ module.exports = {
   updateEmployeeRolePrompt,
   updateEmployeeManagerPrompt,
   viewEmployeesByManagerPrompt,
-  deleteRecordPrompt
 };
